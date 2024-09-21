@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merge Excel Files</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    form {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    input[type='file'] {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Merge Excel Files</h1>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <label>Upload File 1:</label><br />
+    <input type="file" id="file1" name="file1" accept=".xlsx" required /><br />
+
+    <label>Upload File 2:</label><br />
+    <input type="file" id="file2" name="file2" accept=".xlsx" required /><br />
+
+    <label>Upload File 3:</label><br />
+    <input type="file" id="file3" name="file3" accept=".xlsx" required /><br />
+
+    <label>Upload File 4:</label><br />
+    <input type="file" id="file4" name="file4" accept=".xlsx" required /><br />
+
+    <button type="submit">Upload & Merge</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append('file1', document.getElementById('file1').files[0]);
+      formData.append('file2', document.getElementById('file2').files[0]);
+      formData.append('file3', document.getElementById('file3').files[0]);
+      formData.append('file4', document.getElementById('file4').files[0]);
+
+      try {
+        const response = await fetch('/merge', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const downloadUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = 'merged_file.xlsx';
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } else {
+          alert('Error merging files');
+        }
+      } catch (err) {
+        console.error('Error uploading files:', err);
+        alert('Error uploading files');
+      }
+    });
+  </script>
+</body>
+</html>
